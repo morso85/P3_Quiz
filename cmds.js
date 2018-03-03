@@ -54,11 +54,11 @@ exports.testCMD =(rl, id)=> {
 
 				if ( respuesta.toLowerCase().trim() === quiz.answer.toLowerCase().trim()){
 
-					biglog('CORRECTO', 'green');
+					log('CORRECTO', 'green');
 					rl.prompt();
 				}else{
 
-					biglog('INCORRECTO', 'red');
+					log('INCORRECTO', 'red');
 					rl.prompt();	
 				}
 
@@ -135,9 +135,10 @@ exports.playCMD = rl => {
 
 				}else{			
 
-					biglog('INCORRECTO', 'red');
+					log('INCORRECTO', 'red');
 					log(' Tu puntuación ha sido: ');
 					biglog(score, `yellow`);
+					log(' Fin ');
 					rl.prompt();	
 				}
 
@@ -200,7 +201,7 @@ exports.quitCMD = rl => {
 
 exports.creditsCMD = rl => {
         log('Autores de la práctica:', 'red');
-		log('Álvaro Cepeda Zamorano', 'green');
-		log('Álvaro Morso Granero', 'green');
+		log('ALVARO CEPEDA ZAMORANO', 'green');
+		log('ALVARO MORSO GRANERO', 'green');
 		rl.prompt();
 	}
