@@ -72,38 +72,33 @@ exports.addCMD = rl => {
 };
 
 exports.testCMD =(rl, id)=> {
+	validateId(id)
+	.then(id => models.quiz.findById(id))
+	.then(quiz => {
+		if (!quiz){
+			throw new Error (`No existe un quiz asociado al id=${id}.`);
+		}
 
-	if (typeof id  === "undefined"){
-		errorlog(`Falta el parametro id.`);
-		rl.prompt();
-	}else{
-		try {
-			const quiz = model.getByIndex(id);	
-			log(` ${colorize(quiz.question, 'magenta')} `);
-			rl.question(colorize(' Introduzca la respuesta ', 'red'), respuesta => {
+		return makeQuestion(rl, quiz.question)
+		.then(respuesta => {
+			if ( respuesta.toLowerCase().trim() === quiz.answer.toLowerCase().trim()){
 
-				//args[0].toLowerCase().trim();
+				log('CORRECTO', 'green');
+				rl.prompt();
+			}else{
 
-				if ( respuesta.toLowerCase().trim() === quiz.answer.toLowerCase().trim()){
+				log('INCORRECTO', 'red');
+				rl.prompt();	
+			}
 
-					log('CORRECTO', 'green');
-					rl.prompt();
-				}else{
-
-					log('INCORRECTO', 'red');
-					rl.prompt();	
-				}
-
-			});
-			
-		} catch(error){
+		})
+	})
+	 .catch(error => {
 			errorlog(error.message);
 			rl.prompt();
-		}
-	}
+	 });
 	
 };
-
 
 const validateId = id => {
 	return new Sequelize.Promise((resolve, reject) => {
