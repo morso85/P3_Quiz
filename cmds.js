@@ -134,63 +134,63 @@ validateId(id)
 };
 
 
-
 exports.playCMD = rl => {
-	//Creo un array con los ids de las preguntas que hay para responder
 	let score = 0;
-	let numeroPreguntas = model.count();
-	arrayIds = new Array(numeroPreguntas);
+	let arrayIds = [];
 
-	for (var i = 0; i< numeroPreguntas; i++){
-		arrayIds[i] = i;
-	}
+	models.quiz.findAll()
+	.then(quizzes => {
+		quizzes.forEach((quiz, id) => {
+  		arrayIds[id] = quiz;
+		});
 
-	if( arrayIds.length === 0){
-		log(`No hay preguntas `, 'red')
-		
-		rl.prompt();
-	}
-
-	const preguntica = () => {
-
-		if( arrayIds.length === 0){
+		const preguntica = () => {
+			if( arrayIds.length === 0){
 			log(`No quedan preguntas. Tu puntuación ha sido: `, 'red');
 			//log(` Tu puntuación ha sido: `, 'yelllow');
 			biglog(score, `yellow`);
 
 			rl.prompt();
+			} else{ 
 
-		}else{
+				var preguntaAleatoria= Math.floor(Math.random() * arrayIds.length);
 
-			preguntaAleatoria= Math.floor(Math.random() * arrayIds.length);
+				var quiz = arrayIds[preguntaAleatoria];
 
-			var quiz = model.getByIndex(arrayIds[preguntaAleatoria]);
+				log(` ${colorize(quiz.question, 'magenta')} `);
 
-			log(` ${colorize(quiz.question, 'magenta')} `);
-
-			rl.question(colorize(' Introduzca la respuesta ', 'red'), respuesta => {
-				
 				arrayIds.splice(preguntaAleatoria,1);
 
-				if ( respuesta.toLowerCase().trim() === quiz.answer.toLowerCase().trim()){
+				makeQuestion(rl,'Introduzca una respuesta')
+				.then(a => {
+					if(a.toLowerCase().trim() === quiz.answer.toLowerCase()){
 					score = score +1;
 					log(` Correcto. Tu puntuación es de: ${colorize(score, "yellow")} `);
 					preguntica();
-
-				}else{			
-
+					}else{
 					log('INCORRECTO', 'red');
 					log(' Tu puntuación ha sido: ');
 					biglog(score, `yellow`);
 					log(' Fin ');
-					rl.prompt();	
-				}
+					rl.prompt();
+					}
+				})
+				.catch((error) => {
+					errorlog(error.message);
+				});
+			}
+		};
 
-			});
-		}
-	}
-	preguntica()
+
+		preguntica();
+	})
+	.catch((error) => {
+		errorlog(error.message);
+	});
+
 };
+	
+
 
 exports.deleteCMD = (rl, id) => {
 	
